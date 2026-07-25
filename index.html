@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vaibhav Kumar Kaushal | Systems & Security Engineer</title>
+  <style>
+    :root {
+      --bg: #0a0c10;
+      --card-bg: rgba(22, 27, 34, 0.75);
+      --border: rgba(48, 54, 61, 0.8);
+      --accent: #00ff66;
+      --accent-glow: rgba(0, 255, 102, 0.25);
+      --blue: #58a6ff;
+      --purple: #bc8cff;
+      --text: #e6edf3;
+      --text-dim: #8b949e;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+      line-height: 1.6;
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Matrix Rain Canvas */
+    #matrixCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      opacity: 0.12;
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 950px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header & Hero */
+    header {
+      margin-bottom: 35px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 25px;
+      backdrop-filter: blur(10px);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(0, 255, 102, 0.1);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: bold;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    h1 {
+      color: #fff;
+      font-size: 2.8rem;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+    p.subtitle {
+      color: var(--text-dim);
+      font-size: 1.15rem;
+    }
+    
+    .social-links {
+      margin-top: 20px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      background: var(--card-bg);
+      color: var(--blue);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(5px);
+    }
+    .btn:hover {
+      background: rgba(88, 166, 255, 0.15);
+      border-color: var(--blue);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(88, 166, 255, 0.2);
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+    .btn-primary:hover {
+      background: #3fb950;
+      color: #000;
+      box-shadow: 0 0 25px rgba(0, 255, 102, 0.5);
+      transform: translateY(-2px);
+    }
+
+    /* Terminal Window */
+    .terminal-window {
+      background: rgba(1, 22, 39, 0.85);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 255, 102, 0.05);
+      overflow: hidden;
+      margin-bottom: 40px;
+      font-family: 'Fira Code', 'Courier New', Courier, monospace;
+      backdrop-filter: blur(10px);
+    }
+    .terminal-bar {
+      background: rgba(22, 30, 46, 0.9);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+    .dot-red { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green { background: #27c93f; }
+    .terminal-title { color: var(--text-dim); font-size: 0.85rem; margin-left: auto; }
+
+    .terminal-body {
+      padding: 20px;
+      min-height: 240px;
+      max-height: 380px;
+      overflow-y: auto;
+      color: var(--accent);
+    }
+    .prompt { color: var(--blue); font-weight: bold; }
+    .input-line { display: flex; margin-top: 8px; align-items: center; }
+    input.term-input {
+      background: transparent;
+      border: none;
+      color: var(--accent);
+      font-family: inherit;
+      font-size: 1rem;
+      width: 100%;
+      outline: none;
+      margin-left: 8px;
+    }
+    .output { margin-bottom: 10px; white-space: pre-wrap; word-wrap: break-word; }
+
+    /* Section Headers */
+    h2 {
+      color: #fff;
+      font-size: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h2 span.icon { color: var(--accent); }
+
+    /* Skills Grid */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .skill-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 20px;
+      border-radius: 10px;
+      transition: 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+    .skill-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+    .skill-card h3 { font-size: 1.1rem; color: var(--blue); margin-bottom: 12px; }
+    .tags span {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.82rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin: 3px 3px 6px 0;
+    }
+
+    /* Projects Grid */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+    .project-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 25px;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+    .project-card:hover {
+      border-color: var(--purple);
+      box-shadow: 0 10px 30px rgba(188, 140, 255, 0.1);
+    }
+    .project-card h3 { color: #fff; font-size: 1.3rem; margin-bottom: 8px; }
+    .project-card p { color: var(--text-dim); font-size: 0.98rem; margin-bottom: 18px; }
+
+    /* Interactive Code Demo Box */
+    .code-demo {
+      background: #000;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 15px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.85rem;
+      color: #80cbd0;
+      margin-bottom: 18px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Ambient Matrix Effect Background -->
+<canvas id="matrixCanvas"></canvas>
+
+<div class="container">
+
+  <!-- Header Section -->
+  <header>
+    <div class="badge">Computer Engineering @ Thapar</div>
+    <h1>Vaibhav Kumar Kaushal</h1>
+    <p class="subtitle">Systems Programmer | Bash Automation | Cybersecurity Specialist</p>
+    <div class="social-links">
+      <a href="https://github.com/kaushalvaibhav002-rgb" target="_blank" class="btn">GitHub</a>
+      <a href="https://www.linkedin.com/in/vaibhav-kumar-kaushal-58b4b2412" target="_blank" class="btn">LinkedIn</a>
+      <a href="resume.pdf" target="_blank" class="btn btn-primary">Download Resume</a>
+    </div>
+  </header>
+
+  <!-- Interactive Shell Section -->
+  <div class="terminal-window">
+    <div class="terminal-bar">
+      <span class="dot dot-red"></span>
+      <span class="dot dot-yellow"></span>
+      <span class="dot dot-green"></span>
+      <span class="terminal-title">vaibhav@thapar-coe: ~/portfolio</span>
+    </div>
+    <div class="terminal-body" id="termBody">
+      <div class="output">
+┌─────────────────────────────────────────────────────────────┐
+│  VAIBHAV KUMAR KAUSHAL - SYSTEMS & SECURITY SHELL v2.4       │
+│  Type <span style="color:#fff;">'help'</span> for commands or <span style="color:#fff;">'matrix'</span> to toggle visuals.      │
+└─────────────────────────────────────────────────────────────┘
+      </div>
+      <div id="history"></div>
+      <div class="input-line">
+        <span class="prompt">vaibhav@thapar-coe:~$</span>
+        <input type="text" id="termInput" class="term-input" autofocus autocomplete="off" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Technical Skills Section -->
+  <section>
+    <h2><span class="icon">⚡</span> Core Tech Stack</h2>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <h3>Low-Level & Automation</h3>
+        <div class="tags">
+          <span>C (C11/C17)</span>
+          <span>Bash Shell Scripting</span>
+          <span>Linux Kernel / POSIX</span>
+          <span>GCC & Makefile</span>
+          <span>GDB Debugging</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h3>Security & Networking</h3>
+        <div class="tags">
+          <span>TCP/IP Sockets</span>
+          <span>Network Reconnaissance</span>
+          <span>Memory Safety & Buffer Analysis</span>
+          <span>Process Automation</span>
+          <span>Wireshark & Nmap</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Engineering Projects -->
+  <section>
+    <h2><span class="icon">🛠️</span> Low-Level Projects</h2>
+    <div class="projects-grid">
+
+      <!-- Project 1 -->
+      <div class="project-card">
+        <h3>AutoRecon — Multi-Threaded C/Bash Security Recon Framework</h3>
+        <p>A combined system written in low-level C utilizing POSIX threads and raw socket calls, wrapped inside a robust Bash automation engine for rapid target reconnaissance.</p>
+        
+        <div class="code-demo">
+// Low-Level Socket Creation in C
+int sock = socket(AF_INET, SOCK_STREAM, 0);
+struct sockaddr_in server;
+server.sin_family = AF_INET;
+server.sin_port = htons(target_port);
+connect(sock, (struct sockaddr *)&server, sizeof(server));
+        </div>
+
+        <div class="tags" style="margin-bottom: 18px;">
+          <span>C</span><span>Bash</span><span>Socket Programming</span><span>Pthreads</span><span>Linux</span>
+        </div>
+        <a href="https://github.com/kaushalvaibhav002-rgb" target="_blank" class="btn">View Repository</a>
+      </div>
+
+      <!-- Project 2 -->
+      <div class="project-card">
+        <h3>SysHardener — Automated Linux Security & Privilege Auditor</h3>
+        <p>An automated Bash utility designed to audit Linux distributions for misconfigured file permissions, suspicious SUID/GUID binaries, and unpatched kernel vulnerabilities.</p>
+        
+        <div class="tags" style="margin-bottom: 18px;">
+          <span>Bash</span><span>Shell Automation</span><span>Linux System Security</span><span>POSIX</span>
+        </div>
+        <a href="https://github.com/kaushalvaibhav002-rgb" target="_blank" class="btn">View Repository</a>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<script>
+  /* ---------------- MATRIX RAIN EFFECT ---------------- */
+  const canvas = document.getElementById('matrixCanvas');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
+  const fontSize = 16;
+  const columns = canvas.width / fontSize;
+  const rainDrops = Array.from({ length: columns }).fill(1);
+
+  function drawMatrix() {
+    ctx.fillStyle = 'rgba(10, 12, 16, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#00ff66';
+    ctx.font = fontSize + 'px monospace';
+
+    for (let i = 0; i < rainDrops.length; i++) {
+      const text = latin.charAt(Math.floor(Math.random() * latin.length));
+      ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+      if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        rainDrops[i] = 0;
+      }
+      rainDrops[i]++;
+    }
+  }
+  let matrixInterval = setInterval(drawMatrix, 30);
+
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+
+  /* ---------------- INTERACTIVE TERMINAL ---------------- */
+  const input = document.getElementById('termInput');
+  const history = document.getElementById('history');
+  const termBody = document.getElementById('termBody');
+
+  const commands = {
+    'help': 'Available commands:\n  about      - Bio and current focus\n  skills     - Technical stack breakdown\n  projects   - Highlighted systems projects\n  matrix     - Toggle Matrix rain background\n  clear      - Clear terminal window',
+    'about': 'Vaibhav Kumar Kaushal\nComputer Engineering Student @ Thapar Institute of Engineering & Technology.\nSpecializing in C systems programming, Bash shell scripting, and defensive security.',
+    'skills': '[+] Core Languages  : C, Bash Scripting\n[+] Systems/OS     : Linux Administration, POSIX, Memory Management\n[+] Networking/Sec : Sockets, Protocol Analysis, Security Hardening\n[+] Tooling        : GCC, GDB, Git, Makefile, Linux CLI',
+    'projects': '1. AutoRecon   : Multi-threaded TCP scanner written in C with Bash pipeline automation.\n2. SysHardener : Automated Linux auditing and vulnerability check utility in Bash.',
+  };
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      const command = input.value.trim().toLowerCase();
+      
+      const line = document.createElement('div');
+      line.innerHTML = `<span class="prompt">vaibhav@thapar-coe:~$</span> ${input.value}`;
+      history.appendChild(line);
+
+      const response = document.createElement('div');
+      response.className = 'output';
+
+      if (command === 'clear') {
+        history.innerHTML = '';
+      } else if (command === 'matrix') {
+        if (canvas.style.display === 'none') {
+          canvas.style.display = 'block';
+          response.innerText = '[+] Matrix visual effect ENABLED.';
+        } else {
+          canvas.style.display = 'none';
+          response.innerText = '[-] Matrix visual effect DISABLED.';
+        }
+        history.appendChild(response);
+      } else if (commands[command]) {
+        response.innerText = commands[command];
+        history.appendChild(response);
+      } else if (command !== '') {
+        response.innerText = `Command not recognized: '${command}'. Type 'help' for options.`;
+        history.appendChild(response);
+      }
+
+      input.value = '';
+      termBody.scrollTop = termBody.scrollHeight;
+    }
+  });
+</script>
+
+</body>
+</html>
